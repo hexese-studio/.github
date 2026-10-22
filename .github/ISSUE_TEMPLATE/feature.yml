@@ -1,0 +1,42 @@
+name: Feature
+description: Something new, or a change to something that exists.
+title: "Area: what should change"
+labels: ["enhancement"]
+type: Feature
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Problem first, then solution. Who has it, when does it occur?
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: How should it look or behave? Sketches and references welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How do we know it is done? One checkbox per line.
+      value: |
+        - [ ] Build and gate green
+        - [ ] No outbound request, no secrets
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Rejected alternatives, references, open questions.
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Hard rules checked
+      options:
+        - label: Needs no outbound request (no CDN, no external fonts, no tracking).
+        - label: Promises nothing the software does not do and gives no legal advice (§ 2 RDG).

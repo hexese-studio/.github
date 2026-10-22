@@ -1,0 +1,9 @@
+# Blank issues are off: every ticket goes through one of the three templates.
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security issue
+    url: https://github.com/hexese-studio/.github/blob/main/SECURITY.md
+    about: Please not as an issue — the reporting path is in SECURITY.md.
+  - name: Contact the studio
+    url: mailto:info@hexese.com
+    about: Anything that does not belong in a repository.

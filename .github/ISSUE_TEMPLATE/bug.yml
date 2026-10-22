@@ -1,0 +1,61 @@
+name: Bug
+description: Something does not behave as it should.
+title: "Area: what is wrong"
+labels: ["bug"]
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The more precise the steps, the faster the fix.
+        No credentials, keys or personal data in this form.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Where does it happen, and since when?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Console messages and screenshots belong here too.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser or app version, OS, device, window width.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: One checkbox per line.
+      value: |
+        - [ ] Bug no longer reproducible with the steps above
+        - [ ] Build and gate green
+  - type: checkboxes
+    id: checked
+    attributes:
+      label: Checked beforehand
+      options:
+        - label: There is no open issue for this yet.
