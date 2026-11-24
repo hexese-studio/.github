@@ -51,7 +51,7 @@
 
 - **Issue, branch, pull request.** Every change starts as an issue and lands in `staging` through a pull request with green checks.
 - **`main` is what is live.** It only moves through a release pull request, and every upload gets a tag and a GitHub release.
-- **A gate before every upload.** The build fails on third-party requests, inline style blocks, leftover markers and missing legal pages.
+- **A gate before every upload.** The gate fails on unlisted third-party requests, inline style blocks, leftover markers and missing legal pages.
 - **Deploys by hand.** Nothing goes live on a push.
 
 <br>
