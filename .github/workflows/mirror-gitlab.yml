@@ -1,0 +1,60 @@
+name: mirror-gitlab
+
+# Pushes every branch and tag of this repository to the read-only mirror
+# at https://gitlab.com/aaron-kuyucu/hexese-studio/dot-github (GitLab paths
+# cannot start with a dot). GitHub stays the source of truth; the GitLab
+# project has issues, merge requests and CI turned off.
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  delete:
+  schedule:
+    # Hourly, so branches that do not contain this file are mirrored too.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One mirror run at a time; a newer run waits instead of racing an older one.
+concurrency:
+  group: mirror-gitlab
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    if: github.repository == 'hexese-studio/.github'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TARGET: git@gitlab.com:aaron-kuyucu/hexese-studio/dot-github.git
+    steps:
+      - name: Clone all refs from GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git -c "http.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" \
+            clone --mirror "https://github.com/${GITHUB_REPOSITORY}.git" repo.git
+          # Pull request refs are GitHub-only and GitLab rejects them.
+          git -C repo.git for-each-ref --format='%(refname)' refs/pull \
+            | xargs -r -n1 git -C repo.git update-ref -d
+
+      - name: Push branches and tags to GitLab
+        env:
+          MIRROR_KEY: ${{ secrets.GITLAB_MIRROR_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$MIRROR_KEY" > ~/.ssh/mirror_key
+          chmod 600 ~/.ssh/mirror_key
+          # Fetch GitLab's host key and refuse it unless it matches the
+          # fingerprint published at docs.gitlab.com (SSH host keys).
+          ssh-keyscan -t ed25519 gitlab.com > ~/.ssh/known_hosts
+          ssh-keygen -lf ~/.ssh/known_hosts \
+            | grep -q 'SHA256:eUXGGm1YGsMAS7vkcx6JOJdOGHPem5gQp4taiCfCLB8'
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/mirror_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          # --force keeps the mirror identical even if a ref moved backwards;
+          # --prune removes branches and tags that no longer exist on GitHub.
+          git -C repo.git push --force --prune "$TARGET" \
+            'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'
